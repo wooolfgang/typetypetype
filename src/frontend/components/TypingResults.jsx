@@ -29,6 +29,7 @@ export default injectStyles({
     flexBasis: '50%',
     height: '275px',
     border: '1px solid lightgray',
+    background: '#FAFAFA',
     borderRadius: '3px',
     margin: 'auto',
     marginTop: '30px',

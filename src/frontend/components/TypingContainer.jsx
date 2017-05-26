@@ -5,7 +5,6 @@ import TypingField from './TypingField';
 import TypingResults from './TypingResults';
 import TypingMenu from './TypingMenu';
 import Countdown from './CountDown';
-
 import { fetchSubreddit, getUser } from '../functions';
 
 const initialState = {
@@ -19,6 +18,7 @@ const initialState = {
   correctWords: undefined,
   wrongWords: undefined,
   user: undefined,
+  subredditList: ['TodayILearned', 'Showerthoughts', 'Askreddit'],
 };
 
 class TypingContainer extends React.Component {
@@ -27,7 +27,7 @@ class TypingContainer extends React.Component {
     this.state = initialState;
   }
 
-  async componentDidMount() {
+  componentDidMount = async () => {
     const texts = await this.getTexts();
     this.setState({ texts: texts });
     this.setRandomText(this.state.texts);
@@ -45,13 +45,12 @@ class TypingContainer extends React.Component {
 
   getTexts = async (subreddit) => {
     if (!subreddit) {
-      subreddit = 'TodayILearned'
+      this.setState({ currentSubreddit: this.state.subredditList[0] })
+      subreddit = this.state.currentSubreddit;
     }
 
-    const response = await fetch(`https://www.reddit.com/r/${subreddit}/top.json?limit=20`);
-    console.log(response, 'RESPONSE');
+    const response = await fetch(`https://www.reddit.com/r/${subreddit}/top.json?limit=50`);
     const json = await response.json();
-    console.log(json, 'JSON');
     const texts = json.data.children.map(data => {
       return {
         author: data.data.author,
@@ -77,7 +76,11 @@ class TypingContainer extends React.Component {
     });
   }
 
-  onKeyPress = (e) => {
+  setCurrentSubreddit = (subreddit) => {
+    this.setState({ currentSubreddit: subreddit });
+  }
+
+  onTypingStart = (e) => {
     this.updateState();
 
     if (e.which === 32 || e.keyCode === 32) {
@@ -159,28 +162,27 @@ class TypingContainer extends React.Component {
         {
           !this.state.typingFinished ?
             <div className={classes.containerOne}>
-              <TypingMenu user={user} getTexts={this.getTexts} setRandomText={this.setRandomText} />
+              <TypingMenu user={user} getTexts={this.getTexts} setRandomText={this.setRandomText} setCurrentSubreddit={this.setCurrentSubreddit} props={this.state} />
               {
-                this.state.currentTextDetails
-                  ?
+                this.state.currentTextDetails ?
                   <div className={classes.currentTextDetailsContainer}>
                     <span>
                       {'Posted by ' + this.state.currentTextDetails.author + ' at ' + this.state.currentTextDetails.subreddit}
                     </span>
-                    <a href={'https://www.reddit.com' + this.state.currentTextDetails.link + ''} className={classes.link}> Link </a>
+                    <a href={'https://www.reddit.com' + this.state.currentTextDetails.link + ''} className={classes.link} target="_blank"> Link </a>
                   </div>
                   : undefined
               }
               <TypingBox props={this.state} />
               <div className={classes.containerTwo}>
-                <TypingField props={this.state} onKeyPress={this.onKeyPress} onChange={this.onChange} />
+                <TypingField props={this.state} onKeyPress={this.onTypingStart} onChange={this.onChange} />
                 <Countdown time={this.state.secondsPassed} />
                 <button className={classes.button} onClick={this.resetState}> SKIP TEXT </button>
               </div>
               <div className={classes.statsContainer}>
-                <span> WPM: {this.state.wpm ? this.state.wpm : ''} </span>
-                <span> Correct Words: {this.state.correctWords ? this.state.correctWords : ''} </span>
-                <span> Wrong Words: {this.state.wrongWords ? this.state.wrongWords : ''} </span>
+                <span> WPM: <span className={classes.stats}> {this.state.wpm ? this.state.wpm : ''} </span></span>
+                <span> Correct Words: <span className={classes.stats}> {this.state.correctWords ? this.state.correctWords : ''} </span></span>
+                <span> Wrong Words: <span className={classes.stats}> {this.state.wrongWords ? this.state.wrongWords : ''} </span></span>
               </div>
             </div> :
             <TypingResults resetState={this.resetState} props={this.state} />
@@ -228,5 +230,9 @@ export default injectStyles({
     justifyContent: 'space-around',
     alignItems: 'center',
     fontSize: '25px'
+  },
+  stats: {
+    fontWeight: 'bold',
+    fontSize: '40px',
   }
 })(TypingContainer);

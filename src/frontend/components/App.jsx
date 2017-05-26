@@ -16,7 +16,7 @@ class App extends React.Component {
     }
   }
 
-  async componentDidMount() {
+  componentDidMount = async () => {
     try {
       const token = await client.authenticate();
       const user = await getUser(token);

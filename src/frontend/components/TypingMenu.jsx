@@ -1,7 +1,6 @@
 import React from 'react';
 import injectStyles from 'react-jss';
-
-const subredditList = ['TodayILearned', 'Showerthoughts', 'Askreddit'];
+import ListModal from './ListModal';
 
 const styles = {
   activeSubreddit: {
@@ -16,34 +15,48 @@ class TypingMenu extends React.Component {
     super(props);
 
     this.state = {
-      currentSubreddit: subredditList[0],
+      modalOpen: false
     }
   }
 
   onRedditSelect = async (subreddit) => {
-    this.setState({ currentSubreddit: subreddit });
-    const { getTexts, setRandomText } = this.props;
+    const { getTexts, setRandomText, setCurrentSubreddit } = this.props;
+    setCurrentSubreddit(subreddit);
     const texts = await getTexts(subreddit);
     setRandomText(texts);
   }
 
+  toggleModal = () => {
+    this.setState({ modalOpen: this.state.modalOpen ? false : true });
+  }
+
   render() {
-    const { user, classes } = this.props;
+    const { user, classes, props: { currentSubreddit, subredditList } } = this.props;
     return (
       <div className={classes.container}>
         <ul style={{ 'listStyle': 'none' }}>
           {
-            subredditList.map(subreddit =>
-              <li key={subreddit} className={classes.subredditLink} onClick={() => this.onRedditSelect(subreddit)} style={subreddit === this.state.currentSubreddit ? styles.activeSubreddit : undefined}> {subreddit} </li>
+            subredditList.map((subreddit, key) =>
+              <div key={subreddit} className={classes.linkContainer}>
+                <li
+                  className={classes.subredditLink}
+                  onClick={() => this.onRedditSelect(subreddit)}
+                  style={subreddit === currentSubreddit ? styles.activeSubreddit : undefined}>
+                  {subreddit}
+                </li>
+                <span className={classes.viewLink} onClick={this.toggleModal}> view </span>
+              </div>
             )
           }
         </ul>
         <div className={classes.userLevelContainer}>
           <div className={classes.expBar}>
           </div>
-          <span> Average WPM: {user ? user.wpm : undefined} </span>
-          <span> Total words typed: {user ? user.totalWordsTyped : undefined} </span>
+          <span> Level: <span className={classes.stats}> 21 </span> </span>
+          <span> Average WPM: <span className={classes.stats}> {user ? user.wpm : undefined} </span></span>
+          <span> Total words typed: <span className={classes.stats}> {user ? user.totalWordsTyped : undefined} </span> </span>
         </div>
+        <ListModal modalOpen={this.state.modalOpen} />
       </div>
     );
   }
@@ -56,16 +69,31 @@ export default injectStyles({
     width: '100%',
     borderBottom: '1px solid lightgray',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
   userLevelContainer: {
-    width: '40%',
+    width: '60%',
     height: '90px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-around'
+    justifyContent: 'space-between'
   },
   subredditLink: {
     cursor: 'pointer',
+    display: 'inline-block',
+    width: ''
+  },
+  linkContainer: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  viewLink: {
+    padding: '8px',
+    fontSize: '12px',
+    cursor: 'pointer',
+    color: 'blue'
+  },
+  stats: {
+    fontSize: '26px'
   }
 })(TypingMenu);
