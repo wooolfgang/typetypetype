@@ -1,0 +1,19 @@
+{
+  "host": "localhost",
+  "port": 8081,
+  "mongoURI": "mongodb://localhost:27017/typetypetype",
+  "auth": {
+    "path": "api/authentication",
+    "service": "api/users",
+    "secret": "foi829q0euqiojdsfiojd09128309ifdsklfjeso482048iodfsru32098eicsu0983249ruf908c23hr9iufewhr921",
+    "local": {
+      "usernameField": "username",
+      "passwordField": "password"
+    },
+    "google": {
+      "clientID": "101770189685-3tme85o3n5sp2krilh6k6v0vsb0tgi3e.apps.googleusercontent.com",
+      "clientSecret": "tCYAb2v4SjZvHA0ukW3UUiqr",
+      "successRedirect": "/"
+    } 
+  }
+}
