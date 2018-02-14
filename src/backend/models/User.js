@@ -1,5 +1,5 @@
 import Model from './Model';
-import Joi from 'Joi';
+import Joi from 'joi';
 
 class User extends Model {
   static get schema() {

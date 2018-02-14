@@ -24,6 +24,7 @@
     "feathers-mongodb": "^2.8.0",
     "feathers-rest": "^1.7.2",
     "feathers-socketio": "^1.6.0",
+    "joi": "^13.1.2",
     "mongodb": "^2.2.26",
     "passport-facebook": "^2.1.1",
     "passport-google-oauth2": "^0.1.6",
